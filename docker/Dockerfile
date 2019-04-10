@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/openshift3/ose-cli:v3.11.59
 
-LABEL maintainer="Jeff Kelly <jeff.kelly@arctiq.ca>
+LABEL maintainer="Jeff Kelly <jeff.kelly@arctiq.ca>"
 LABEL io.k8s.description="Storage Migration Placeholder"
 
 WORKDIR /
