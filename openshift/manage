@@ -176,6 +176,10 @@ fi
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
+getProjectName() {
+	echo "${PROJECT_NAMESPACE}-${DEPLOYMENT_ENV_NAME}"
+}
+
 migrate(){
   (
     _hostName=${1}
@@ -242,6 +246,7 @@ migrate(){
     echoWarning "\nPVC migration complete."
   )
 }
+
 
 updateMigratorDeplymentParams() {
   (
@@ -333,11 +338,18 @@ syncPVCs(){
       exit 1
     fi
 
-    echo
-    runInContainer -v \
-    ${_migratorPodName} \
-    "/migrate -y -s ${_source} -t ${_target}"
+		_podInstance=$(pod app=${_migratorPodName})
+		_command="/migrate -y -s ${_source} -t ${_target}"
+		echo "Command: ${_command} - POD instance: ${_podInstance}"
+		
+		oc exec "${_podInstance}" -- bash -c "${_command:-echo Hello}"
   )
+}
+
+pod() { 
+	local selector=$1
+	local query='?(@.status.phase=="Running")'
+	oc get pods --selector $selector -o jsonpath="{.items[$query].metadata.name}"
 }
 
 deploymentEnvNameSet() {
